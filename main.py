@@ -1,16 +1,19 @@
 import discord
 import sqlite3
 
+import logging
+logger = logging.getLogger(__name__)
+
 class DiscordClient(discord.Client):
     def __init__(self, *args, **kwargs):
         self.sql = SQLAccess('spells_sqlite.db')
         super().__init__(*args, **kwargs)
 
     async def on_ready(self):
-        print('We have logged in as {0.user}'.format(client))
+        logger.info(('We have logged in as {0.user}'.format(client))
 
     async def on_message(self, message):
-        print("Message received! %s"%message.contents)
+        logger.info("Message received! %s"%message.content)
         if message.author == client.user:
             return
         
@@ -23,10 +26,10 @@ class DiscordClient(discord.Client):
             else:
                 # message contains any of the results
                 results = self.sql.spellSearchNameContainsAny(m)
+            
             if results:
                 for result in results:
-                    #await message.channel.send(result)
-                    pass
+                    await message.channel.send(result)
             else:
                 await message.channel.send('No results found :(')
 
@@ -96,9 +99,10 @@ class SQLAccess():
                         castingTime, components, spellRange, area, targets, 
                         duration, savingThrow, spellResistance, description,
                     )
-            print('Found: '+spell)
+            logger.info('Found: '+spell)
             spellStrings.append(spell)
             
+        logger.info('Found %s spells for query'%len(spellStrings))
         return spellStrings
 
 
