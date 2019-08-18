@@ -4,6 +4,7 @@ astor==0.8.0
 astroid==2.2.5
 async-timeout==3.0.1
 attrs==19.1.0
+boto==2.49.0
 chardet==3.0.4
 colorama==0.4.1
 discord.py==1.2.3

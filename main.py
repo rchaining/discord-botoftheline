@@ -2,6 +2,10 @@ import discord
 import sqlite3
 import yaml
 
+from boto.s3.connection import S3Connection
+import os
+s3 = S3Connect(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+
 import logging
 logging.basicConfig(format = '%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -124,4 +128,5 @@ class SQLAccess():
 
 
 client = DiscordClient()
-client.run(conf['token'])
+logger.info('using token: %s'%os.environ['token'])
+client.run(os.environ['token'])
