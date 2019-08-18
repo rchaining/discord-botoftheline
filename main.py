@@ -10,7 +10,7 @@ class DiscordClient(discord.Client):
         super().__init__(*args, **kwargs)
 
     async def on_ready(self):
-        logger.info(('We have logged in as {0.user}'.format(client))
+        logger.info(('We have logged in as {0.user}'.format(client)))
 
     async def on_message(self, message):
         logger.info("Message received! %s"%message.content)
