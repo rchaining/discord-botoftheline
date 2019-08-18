@@ -10,23 +10,23 @@ class DiscordClient(discord.Client):
         print('We have logged in as {0.user}'.format(client))
 
     async def on_message(self, message):
+        print("Message received! %s"%message.contents)
         if message.author == client.user:
             return
         
         if message.content.startswith('$spell contains'):
-            output = ''
             m = message.content.split()
             results = None
             if m[0] == '-a':
-                # message must contain all the following
+                # message must contain all the results
                 results = self.sql.spellSearchNameContainsAll(m[1:])
             else:
-                # message contains any of the following
+                # message contains any of the results
                 results = self.sql.spellSearchNameContainsAny(m)
-            
             if results:
                 for result in results:
-                    await message.channel.send(result)
+                    #await message.channel.send(result)
+                    pass
             else:
                 await message.channel.send('No results found :(')
 
@@ -61,22 +61,23 @@ class SQLAccess():
     def formatSpellList(self):
         spellStrings = []
         results = self.cur.fetchall()
+        noneFilter = lambda val: val if val else None
         for result in results:
-            name = result[0]
-            school = result[1]
-            subschool = result[2]
-            descriptor = result[3]
-            spellLevel = result[4]
-            castingTime = result[5]
-            components = result[6]
-            spellRange = result[8]
-            area = result[9]
-            targets = result[10]
-            duration = result[11]
-            savingThrow = result[15]
-            spellResistance = result[16]
-            description = result[17]
-            shortDesc = result[44]
+            name = noneFilter(result[0])
+            school = noneFilter(result[1])
+            subschool = noneFilter(result[2])
+            descriptor = noneFilter(result[3])
+            spellLevel = noneFilter(result[4])
+            castingTime = noneFilter(result[5])
+            components = noneFilter(result[6])
+            spellRange = noneFilter(result[8])
+            area = noneFilter(result[9])
+            targets = noneFilter(result[10])
+            duration = noneFilter(result[11])
+            savingThrow = noneFilter(result[15])
+            spellResistance = noneFilter(result[16])
+            description = noneFilter(result[17])
+            shortDesc = noneFilter(result[44])
 
             spell = ('__**{}**__\n'+ \
                     '**School** {} ({}) [{}]; **Level** {}\n'+ \
