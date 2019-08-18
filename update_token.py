@@ -15,9 +15,10 @@ def main():
     field = args[2].split(':')[0]
     data = args[2].split(':')[1]
 
-    with open(fname, 'rw') as f:
+    with open(fname, 'r') as f:
         conf = yaml.load(f)
-        conf[field] = data
+    conf[field] = data
+    with open(fname, 'w') as f:
         yaml.dump(conf, f)
 
 main()
