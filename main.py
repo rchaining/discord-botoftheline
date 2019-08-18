@@ -2,6 +2,7 @@ import discord
 import sqlite3
 
 import logging
+logging.basicConfig(format = '%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class DiscordClient(discord.Client):
@@ -20,16 +21,21 @@ class DiscordClient(discord.Client):
         if message.content.startswith('$spell contains'):
             m = message.content.split()
             results = None
-            if m[0] == '-a':
-                # message must contain all the results
-                results = self.sql.spellSearchNameContainsAll(m[1:])
+            if m[0] == '--any':
+                # spell may contain any of the keywords
+                results = self.sql.spellSearchNameContainsAny(m[3:])
             else:
-                # message contains any of the results
-                results = self.sql.spellSearchNameContainsAny(m)
+                # spell must contain all of the keywords
+                results = self.sql.spellSearchNameContainsAll(m[2:])
             
             if results:
-                for result in results:
-                    await message.channel.send(result)
+                if len(results)>3:
+                    await message.channel.send('Greater than 3 results. Condensing')
+                    for result in results:
+                        await message.channel.send(result[1])
+                else:
+                    for result in results:
+                        await message.channel.send(result[0])
             else:
                 await message.channel.send('No results found :(')
 
@@ -41,23 +47,26 @@ class SQLAccess():
          self.cur = self.connection.cursor()
 
     def spellSearchNameContainsAll(self, names):
-        # query = '%'+name+'%'
-        # self.cur.execute('SELECT * FROM spells WHERE name LIKE ?', (query,))
         parameters = []
         query = 'SELECT * FROM spells WHERE name LIKE '
         for name in names:
             parameters.append('%{}%'.format(name))
             query = query+'? AND name LIKE '
+        query = query[:-15]
+        logging.info('Query: %s'%query)
+        logging.info('Parameters: %s'%parameters)
         self.cur.execute(query, tuple(parameters))
         return self.formatSpellList()
 
     def spellSearchNameContainsAny(self, names):
         parameters = []
-        query = 'SELECT * FROM spells WHERE name LIKE ?'
+        query = 'SELECT * FROM spells WHERE name LIKE '
         for name in names:
             parameters.append('%{}%'.format(name))
-            query = query+'OR name LIKE ?'
+            query = query+'? OR name LIKE '
         query = query[:-14]
+        logging.info('Query: %s'%query)
+        logging.info('Parameters: %s'%parameters)
         self.cur.execute(query, tuple(parameters))
         return self.formatSpellList()
 
@@ -92,19 +101,22 @@ class SQLAccess():
                     '**Area** {}\n'+ \
                     '**Target** {}\n'+ \
                     '**Duration** {}\n'+ \
-                    '**Saving Throw** {}; **Spell Resistance** {}\n'+ \
-                    '__DESCPRIPTION__\n\n'+ \
+                    '**Saving Throw** {}; **Spell Resistance** {}\n\n'+ \
+                    '__DESCPRIPTION__\n'+ \
                     '{}').format(
                         name, school, subschool, descriptor, spellLevel, 
                         castingTime, components, spellRange, area, targets, 
                         duration, savingThrow, spellResistance, description,
                     )
+
+            formattedDesc = ('__**{}**__\n{}\n\n').format(name, shortDesc)
+
             logger.info('Found: '+spell)
-            spellStrings.append(spell)
+            spellStrings.append([spell, formattedDesc])
             
         logger.info('Found %s spells for query'%len(spellStrings))
         return spellStrings
 
 
 client = DiscordClient()
-client.run('NjAyOTkyNzQ1MDg2MTg5NTY5.XVjPeQ.CPfqEJQnds38JvzIyi1k7xbaiEE')
+client.run('NjAyOTkyNzQ1MDg2MTg5NTY5.XVmObw.a--ZMxkqJ2PEWXNuozx02pI8nEY')
