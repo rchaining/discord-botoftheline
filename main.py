@@ -1,9 +1,14 @@
 import discord
 import sqlite3
+import yaml
 
 import logging
 logging.basicConfig(format = '%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+conf = None
+with open('conf.yaml', 'r') as f:
+    conf = yaml.load(f)
 
 class DiscordClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -29,8 +34,8 @@ class DiscordClient(discord.Client):
                 results = self.sql.spellSearchNameContainsAll(m[2:])
             
             if results:
-                if len(results)>3:
-                    await message.channel.send('Greater than 3 results. Condensing')
+                if len(results) > conf['spell_condense_after']:
+                    await message.channel.send('Greater than %s results. Condensing'%conf['spell_condense_after'])
                     for result in results:
                         await message.channel.send(result[1])
                 else:
@@ -119,4 +124,4 @@ class SQLAccess():
 
 
 client = DiscordClient()
-client.run('NjAyOTkyNzQ1MDg2MTg5NTY5.XVmiCw.J6GZD7a13R2i0RNfE68ACxKG4Zk')
+client.run(conf['token'])
