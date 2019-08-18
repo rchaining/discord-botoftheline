@@ -119,4 +119,4 @@ class SQLAccess():
 
 
 client = DiscordClient()
-client.run('NjAyOTkyNzQ1MDg2MTg5NTY5.XVmObw.a--ZMxkqJ2PEWXNuozx02pI8nEY')
+client.run('NjAyOTkyNzQ1MDg2MTg5NTY5.XVmiCw.J6GZD7a13R2i0RNfE68ACxKG4Zk')
