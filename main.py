@@ -57,7 +57,11 @@ class SQLAccess():
         _, res = dbx.files_download(path='/spells_sqlite.db')
 
         fp = tempfile.TemporaryFile()
-        fp.write(res.content)
+        if res.content:
+            logger.info('Found content from dropbox')
+        else:
+            logger.info('SQLite db not found in dropbox')
+        logger.info('Writing to tempfile:%s'%fp.write(res.content))
         fp.close()
 
         logger.info('Connecting to sqlite with tempfile: %s'%fp.name)
