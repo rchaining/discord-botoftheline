@@ -60,6 +60,7 @@ class SQLAccess():
         fp.write(res.content)
         fp.close()
 
+        logger.info('Connecting to sqlite with tempfile: %s'%fp.name)
         conn = sqlite3.connect(fp.name)
         return conn
 
