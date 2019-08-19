@@ -18,10 +18,10 @@ class DiscordClient(discord.Client):
         logger.info(('We have logged in as {0.user}'.format(client)))
 
     async def on_message(self, message):
-        logger.info("Message received! %s"%message.content)
         if message.author == client.user:
             return
         
+        logger.info("Message received! %s"%message.content)
         if message.content.startswith('$spell contains'):
             m = message.content.split()
             results = None
@@ -33,7 +33,10 @@ class DiscordClient(discord.Client):
                 results = self.sql.spellSearchNameContainsAll(m[2:])
             
             if results:
-                if len(results) > int(os.environ['condense_after']):
+                if len(results) > 10:
+                    logging.info('Way too many results')
+                    await message.channel.send('Greater than 10 results. Please refine your search')
+                elif len(results) > int(os.environ['condense_after']):
                     await message.channel.send('Greater than %s results. Condensing' % int(os.environ['condense_after']))
                     for result in results:
                         await message.channel.send(result[1])
