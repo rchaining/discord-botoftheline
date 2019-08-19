@@ -36,6 +36,7 @@ class DiscordClient(discord.Client):
                 if len(results) > 10:
                     logging.info('Way too many results')
                     await message.channel.send('Greater than 10 results. Please refine your search')
+                    return
                 elif len(results) > int(os.environ['condense_after']):
                     await message.channel.send('Greater than %s results. Condensing' % int(os.environ['condense_after']))
                     for result in results:
