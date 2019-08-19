@@ -57,7 +57,7 @@ class SQLAccess():
         _, res = dbx.files_download(path='/spells_sqlite.db')
 
         fp = tempfile.TemporaryFile()
-        fp.write(res.contents)
+        fp.write(res.content)
         fp.close()
 
         conn = sqlite3.connect(fp.name)
