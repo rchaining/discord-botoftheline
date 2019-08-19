@@ -22,6 +22,9 @@ class DiscordClient(discord.Client):
             return
         
         logger.info("Message received! %s"%message.content)
+        if message.content.contains('file a bug report'):
+            await message.channel.send('Please direct all bug reports to /dev/null')
+            return
         if message.content.startswith('$spell contains'):
             m = message.content.split()
             results = None
