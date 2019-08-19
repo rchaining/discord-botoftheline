@@ -1,16 +1,13 @@
 import discord
 import sqlite3
 import yaml
-
+import dropbox
+import tempfile
 import os
 
 import logging
 logging.basicConfig(format = '%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-conf = None
-with open('conf.yaml', 'r') as f:
-    conf = yaml.load(f)
 
 class DiscordClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -36,8 +33,8 @@ class DiscordClient(discord.Client):
                 results = self.sql.spellSearchNameContainsAll(m[2:])
             
             if results:
-                if len(results) > conf['spell_condense_after']:
-                    await message.channel.send('Greater than %s results. Condensing'%conf['spell_condense_after'])
+                if len(results) > int(os.environ['condense_after']):
+                    await message.channel.send('Greater than %s results. Condensing' % int(os.environ['condense_after']))
                     for result in results:
                         await message.channel.send(result[1])
                 else:
@@ -50,8 +47,21 @@ class DiscordClient(discord.Client):
 
 class SQLAccess():
     def __init__(self, db):
-         self.connection = sqlite3.connect(db)
+         self.connection = self.getSqlConn()
          self.cur = self.connection.cursor()
+
+    
+    def getSqlConn(self):
+        token = os.environ['dbx_token']
+        dbx = dropbox.Dropbox(token)
+        _, res = dbx.files_download(path='/spells_sqlite.db')
+
+        fp = tempfile.TemporaryFile()
+        fp.write(res.contents)
+        fp.close()
+
+        conn = sqlite3.connect(fp.name)
+        return conn
 
     def spellSearchNameContainsAll(self, names):
         parameters = []
