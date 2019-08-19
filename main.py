@@ -61,7 +61,7 @@ class SQLAccess():
         fp.close()
 
         logger.info('Connecting to sqlite with tempfile: %s'%fp.name)
-        conn = sqlite3.connect(fp.name)
+        conn = sqlite3.connect(str(fp.name))
         return conn
 
     def spellSearchNameContainsAll(self, names):
