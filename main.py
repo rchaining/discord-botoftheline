@@ -55,17 +55,17 @@ class SQLAccess():
         token = os.environ['dbx_token']
         dbx = dropbox.Dropbox(token)
         _, res = dbx.files_download(path='/spells_sqlite.db')
-
-        fp = tempfile.TemporaryFile()
         if res.content:
             logger.info('Found content from dropbox')
         else:
             logger.info('SQLite db not found in dropbox')
-        logger.info('Writing to tempfile:%s'%fp.write(res.content))
-        fp.close()
 
-        logger.info('Connecting to sqlite with tempfile: %s'%fp.name)
-        conn = sqlite3.connect(str(fp.name))
+        fname = tempfile.gettempdir()+'/spells_sqlite.db'
+        with open(fname, 'w') as fp:
+            logger.info('Writing to tempfile:%s'%fp.write(res.content))
+
+        logger.info('Connecting to sqlite with tempfile: %s'%fname)
+        conn = sqlite3.connect(fname)
         return conn
 
     def spellSearchNameContainsAll(self, names):
