@@ -61,7 +61,7 @@ class SQLAccess():
             logger.info('SQLite db not found in dropbox')
 
         fname = tempfile.gettempdir()+'/spells_sqlite.db'
-        with open(fname, 'w') as fp:
+        with open(fname, 'wb') as fp:
             logger.info('Writing to tempfile:%s'%fp.write(res.content))
 
         logger.info('Connecting to sqlite with tempfile: %s'%fname)
