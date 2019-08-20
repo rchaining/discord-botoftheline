@@ -2,7 +2,7 @@ import discord
 import sqlite3
 import yaml
 import dropbox
-import tempfile
+from tempfile import gettempdir
 import os
 
 import logging
@@ -25,9 +25,16 @@ class DiscordClient(discord.Client):
         if 'file a bug report' in message.content:
             await message.channel.send('Please direct all bug reports to /dev/null')
             return
+
+        
+        m = message.content.split()
+        results = None
+
+        if message.content.startswith('$spell named'):
+            spellName = message.content.replace('$spell named', '')
+            results = self.sql.spellSearchExactName(spellName)
+
         if message.content.startswith('$spell contains'):
-            m = message.content.split()
-            results = None
             if m[0] == '--any':
                 # spell may contain any of the keywords
                 results = self.sql.spellSearchNameContainsAny(m[3:])
@@ -35,20 +42,23 @@ class DiscordClient(discord.Client):
                 # spell must contain all of the keywords
                 results = self.sql.spellSearchNameContainsAll(m[2:])
             
-            if results:
-                if len(results) > 10:
-                    logging.info('Way too many results')
-                    await message.channel.send('Greater than 10 results. Please refine your search')
-                    return
-                elif len(results) > int(os.environ['condense_after']):
-                    await message.channel.send('Greater than %s results. Condensing' % int(os.environ['condense_after']))
-                    for result in results:
-                        await message.channel.send(result[1])
-                else:
-                    for result in results:
-                        await message.channel.send(result[0])
+        if results:
+            if len(results) > 10:
+                logging.info('Way too many results')
+                await message.channel.send('Greater than 10 results. Please refine your search')
+                return
+            elif len(results) > int(os.environ['condense_after']):
+                await message.channel.send('Greater than %s results. Condensing' % int(os.environ['condense_after']))
+                for result in results:
+                    await message.channel.send(result[1])
             else:
-                await message.channel.send('No results found :(')
+                for result in results:
+                    if len(result[0]) < 900: # Discord character limit
+                        await message.channel.send(result[0])
+                    else:
+                        await message.channel.send(result[1])
+        else:
+            await message.channel.send('No results found :(')
 
         
 
@@ -67,7 +77,7 @@ class SQLAccess():
         else:
             logger.info('SQLite db not found in dropbox')
 
-        fname = tempfile.gettempdir()+'/spells_sqlite.db'
+        fname = gettempdir()+'/spells_sqlite.db'
         with open(fname, 'wb') as fp:
             logger.info('Writing to tempfile:%s'%fp.write(res.content))
 
@@ -98,6 +108,12 @@ class SQLAccess():
         logging.info('Parameters: %s'%parameters)
         self.cur.execute(query, tuple(parameters))
         return self.formatSpellList()
+
+    def spellSearchExactName(self, spellName):
+        query = 'SELECT * FROM spells WHERE name=?'
+        logging.info('Searching for a spell with the name: %s'%spellName)
+        self.cur.execute(query, (spellName,))
+        return self.formatSpellList
 
     def formatSpellList(self):
         spellStrings = []
@@ -130,9 +146,9 @@ class SQLAccess():
                     '**Area** {}\n'+ \
                     '**Target** {}\n'+ \
                     '**Duration** {}\n'+ \
-                    '**Saving Throw** {}; **Spell Resistance** {}\n\n'+ \
+                    '**Saving Throw** {}; **Spell Resistance** {}\n'+ \
                     '__DESCPRIPTION__\n'+ \
-                    '{}').format(
+                    '{}\n\n').format(
                         name, school, subschool, descriptor, spellLevel, 
                         castingTime, components, spellRange, area, targets, 
                         duration, savingThrow, spellResistance, description,
