@@ -29,12 +29,15 @@ class DiscordClient(discord.Client):
         
         m = message.content.split()
         results = None
+        commandEntered = False
 
         if message.content.startswith('$spell named'):
+            commandEntered = True
             spellName = message.content.replace('$spell named ', '')
             results = self.sql.spellSearchExactName(spellName)
 
         if message.content.startswith('$spell contains'):
+            commandEntered = True
             if m[0] == '--any':
                 # spell may contain any of the keywords
                 results = self.sql.spellSearchNameContainsAny(m[3:])
@@ -57,7 +60,7 @@ class DiscordClient(discord.Client):
                         await message.channel.send(result[0])
                     else:
                         await message.channel.send(result[1])
-        else:
+        elif commandEntered and not results:
             await message.channel.send('No results found :(')
 
         
