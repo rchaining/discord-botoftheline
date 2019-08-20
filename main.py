@@ -31,7 +31,7 @@ class DiscordClient(discord.Client):
         results = None
 
         if message.content.startswith('$spell named'):
-            spellName = message.content.replace('$spell named', '')
+            spellName = message.content.replace('$spell named ', '')
             results = self.sql.spellSearchExactName(spellName)
 
         if message.content.startswith('$spell contains'):
@@ -113,7 +113,7 @@ class SQLAccess():
         query = 'SELECT * FROM spells WHERE name=?'
         logging.info('Searching for a spell with the name: %s'%spellName)
         self.cur.execute(query, (spellName,))
-        return self.formatSpellList
+        return self.formatSpellList()
 
     def formatSpellList(self):
         spellStrings = []
