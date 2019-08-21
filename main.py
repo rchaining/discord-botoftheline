@@ -56,7 +56,7 @@ class DiscordClient(discord.Client):
                     await message.channel.send(result[1])
             else:
                 for result in results:
-                    if len(result[0]) < 900: # Discord character limit
+                    if len(result[0]) < 1900: # Discord character limit
                         await message.channel.send(result[0])
                     else:
                         await message.channel.send(result[1])
@@ -132,8 +132,8 @@ class SQLAccess():
             components = noneFilter(result[6])
             spellRange = noneFilter(result[8])
             area = noneFilter(result[9])
-            targets = noneFilter(result[10])
-            duration = noneFilter(result[11])
+            targets = noneFilter(result[11])
+            duration = noneFilter(result[12])
             savingThrow = noneFilter(result[15])
             spellResistance = noneFilter(result[16])
             description = noneFilter(result[17])
@@ -157,7 +157,23 @@ class SQLAccess():
                         duration, savingThrow, spellResistance, description,
                     )
 
-            formattedDesc = ('__**{}**__\n{}\n\n').format(name, shortDesc)
+            formattedDesc = ('__**{}**__\n'+ \
+                    '**School** {} ({}) [{}]; **Level** {}\n'+ \
+                    '__CASTING__\n'+ \
+                    '**Casting Time** {}\n'+ \
+                    '**Components** {}\n'+ \
+                    '__EFFECT__\n'+ \
+                    '**Range** {}\n'+ \
+                    '**Area** {}\n'+ \
+                    '**Target** {}\n'+ \
+                    '**Duration** {}\n'+ \
+                    '**Saving Throw** {}; **Spell Resistance** {}\n'+ \
+                    '__DESCPRIPTION__\n'+ \
+                    '{}\n\n').format(
+                        name, school, subschool, descriptor, spellLevel, 
+                        castingTime, components, spellRange, area, targets, 
+                        duration, savingThrow, spellResistance, shortDesc,
+                    )
 
             logger.info('Found: '+spell)
             spellStrings.append([spell, formattedDesc])
