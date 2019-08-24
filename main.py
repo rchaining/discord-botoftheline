@@ -55,7 +55,7 @@ class DiscordClient(discord.Client):
             else:
                 # spell must contain all of the keywords
                 results = self.sql.spellSearchNameContainsAll(m[2:])
-        elif message.contents.startswith('$identify'):
+        elif message.content.startswith('$identify'):
             toID = message.content.strip().replace('$identify ', '')
             if not toID:
                 return
