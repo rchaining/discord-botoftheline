@@ -61,7 +61,7 @@ class DiscordClient(discord.Client):
                 return
             for skill in KNOWEDGEMAP.keys():
                 if toID in KNOWEDGEMAP[skill]:
-                    await.message.channel.send('Use %s to identify that'%skill)
+                    await message.channel.send('Use %s to identify that'%skill)
             return
 
         if results:
