@@ -9,6 +9,18 @@ import logging
 logging.basicConfig(format = '%(levelname)s:%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+KNOWEDGEMAP = {
+    'arcana': ['ancient mysteries', 'magic', 'arcane symbols', 'constructs', 'dragons', 'magical beasts'],
+    'dungeoneering' : ['aberrations', 'canerns', 'oozes', 'spelunking'],
+    'geography': ['lands', 'terrain', 'climate', 'people'],
+    'history' : ['wars', 'colonies', 'migrations', 'inhabitants', 'laws', 'customs', 'traditions',],
+    'local' : ['legends', 'personalities', 'inhabitants', 'laws', 'customs', 'traditions', 'humanoids'],
+    'nature' : ['animals', 'fey', 'monstrous humanoids', 'plants', 'seasons', 'cycles', 'weather', 'vermin'],
+    'nobility' : ['lineages', 'heraldry', 'personalities', 'royalty'],
+    'planes' : ['inner planes', 'outer planes', 'astral plane', 'ethereal plane', 'outsiders', 'planar magic'],
+    'religion' : ['gods', 'mythic', 'mythic history', 'ecclesiastic tradition', 'holy symbols', 'undead'],
+}
+
 class DiscordClient(discord.Client):
     def __init__(self, *args, **kwargs):
         self.sql = SQLAccess('spells_sqlite.db')
@@ -26,7 +38,7 @@ class DiscordClient(discord.Client):
             await message.channel.send('Please direct all bug reports to /dev/null')
             return
 
-        
+
         m = message.content.split()
         results = None
         commandEntered = False
@@ -35,8 +47,7 @@ class DiscordClient(discord.Client):
             commandEntered = True
             spellName = message.content.replace('$spell named ', '')
             results = self.sql.spellSearchExactName(spellName)
-
-        if message.content.startswith('$spell contains'):
+        elif message.content.startswith('$spell contains'):
             commandEntered = True
             if m[0] == '--any':
                 # spell may contain any of the keywords
@@ -44,7 +55,15 @@ class DiscordClient(discord.Client):
             else:
                 # spell must contain all of the keywords
                 results = self.sql.spellSearchNameContainsAll(m[2:])
-            
+        elif message.contents.startswith('$identify'):
+            toID = message.contents.strip().replace('$identify ', '')
+            if not toID:
+                return
+            for skill in KNOWEDGEMAP.keys():
+                if toID in KNOWEDGEMAP[skill]:
+                    await.message.channel.send('Use %s to identify that'%skill)
+            return
+
         if results:
             if len(results) > 10:
                 logging.info('Way too many results')
