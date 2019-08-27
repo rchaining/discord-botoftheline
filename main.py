@@ -24,6 +24,7 @@ KNOWEDGEMAP = {
 class DiscordClient(discord.Client):
     def __init__(self, *args, **kwargs):
         self.sql = SQLAccess('spells_sqlite.db')
+        self.enablePartyJoke = False
         super().__init__(*args, **kwargs)
 
     async def on_ready(self):
@@ -43,7 +44,13 @@ class DiscordClient(discord.Client):
         results = None
         commandEntered = False
 
-        if message.content.startswith('$spell named'):
+        if message.content == '$camelbot toggle the party split joke':
+            self.enablePartyJoke = not self.enablePartyJoke
+            return
+        elif 'split the party' in message.content and self.enablePartyJoke == True:
+            await message.channel.send('It\'s a bad idea to split the party!')
+            return
+        elif message.content.startswith('$spell named'):
             commandEntered = True
             spellName = message.content.replace('$spell named ', '')
             results = self.sql.spellSearchExactName(spellName)
