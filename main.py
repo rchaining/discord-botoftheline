@@ -44,11 +44,14 @@ class DiscordClient(discord.Client):
         results = None
         commandEntered = False
 
-        if message.content == '$camelbot toggle the party split joke':
+        if message.content == '$camelbot toggle party jokes':
             self.enablePartyJoke = not self.enablePartyJoke
             return
-        elif 'split the party' in message.content and self.enablePartyJoke == True:
+        elif 'split the party' in message.content and self.enablePartyJoke:
             await message.channel.send('It\'s a bad idea to split the party!')
+            return
+        elif 'keep' in message.content and 'party together' in message.content and self.enablePartyJoke:
+            await message.channel.send('https://cdn.discordapp.com/attachments/547608064161873930/619739566332575768/uoqvtjpda3w11.jpg')
             return
         elif message.content.startswith('$spell named'):
             commandEntered = True
