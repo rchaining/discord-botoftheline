@@ -47,17 +47,17 @@ class DiscordClient(discord.Client):
         if message.content == '$camelbot toggle party jokes':
             self.enablePartyJoke = not self.enablePartyJoke
             return
-        elif 'split the party' in message.content and self.enablePartyJoke:
+        elif 'split the party' in message.content.lower() and self.enablePartyJoke:
             await message.channel.send('It\'s a bad idea to split the party!')
             return
-        elif 'keep' in message.content and 'party together' in message.content and self.enablePartyJoke:
+        elif 'keep' in message.content.lower() and 'party together' in message.content.lower() and self.enablePartyJoke:
             await message.channel.send('https://cdn.discordapp.com/attachments/547608064161873930/619739566332575768/uoqvtjpda3w11.jpg')
             return
-        elif message.content.startswith('$spell named'):
+        elif message.content.lower().startswith('$spell named'):
             commandEntered = True
-            spellName = message.content.replace('$spell named ', '')
+            spellName = message.content.lower().replace('$spell named ', '')
             results = self.sql.spellSearchExactName(spellName)
-        elif message.content.startswith('$spell contains'):
+        elif message.content.lower().startswith('$spell contains'):
             commandEntered = True
             if m[0] == '--any':
                 # spell may contain any of the keywords
@@ -65,8 +65,8 @@ class DiscordClient(discord.Client):
             else:
                 # spell must contain all of the keywords
                 results = self.sql.spellSearchNameContainsAll(m[2:])
-        elif message.content.startswith('$identify'):
-            toID = message.content.strip().replace('$identify ', '')
+        elif message.content.lower().startswith('$identify'):
+            toID = message.content.lower().strip().replace('$identify ', '')
             if not toID:
                 return
             for skill in KNOWEDGEMAP.keys():
