@@ -91,8 +91,12 @@ class DiscordClient(discord.Client):
                     await message.channel.send('Total:' + str(sum(rollResults)))
                     if 69 in rollResults:
                         await message.channel.send('*nice*')
+                    if 420 in rollResults:
+                        await message.channel.send('Blaze it! 🔥🔥🔥🔥')
                 elif rollResults == 69:
                     await message.channel.send('*nice*')
+                elif 420 in rollResults:
+                    await message.channel.send('Blaze it! 🔥🔥🔥🔥')
             except DiceParserException as e:
                 logger.info(e)
                 await message.channel.send('Parsing error:' + e.message)
