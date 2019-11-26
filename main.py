@@ -83,9 +83,9 @@ class DiscordClient(discord.Client):
                 head = self.roller.buildTree(tokens)
                 results = self.roller.getResults(head)
 
-                message.channel.send(roll + ': ' + results)
+                message.channel.send(roll + ': ' + str(results))
                 if type(results, list):
-                    message.channel.send('Total:' + sum(results))
+                    message.channel.send('Total:' + str(sum(results)))
             except DiceParserException as e:
                 logger.info(e)
                 message.channel.send('Parsing error:' + e.message)
