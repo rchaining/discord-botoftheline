@@ -95,7 +95,7 @@ class DiscordClient(discord.Client):
                         await message.channel.send('Blaze it! 🔥🔥🔥🔥')
                 elif rollResults == 69:
                     await message.channel.send('*nice*')
-                elif 420 in rollResults:
+                elif rollResults == 420:
                     await message.channel.send('Blaze it! 🔥🔥🔥🔥')
             except DiceParserException as e:
                 logger.info(e)
