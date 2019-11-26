@@ -92,6 +92,7 @@ class DiscordClient(discord.Client):
             except TokenizerException as e:
                 logger.info(e)
                 await message.channel.send('Parsing error:' + e.message)
+            return
 
         if results:
             if len(results) > 10:
