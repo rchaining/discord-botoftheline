@@ -78,7 +78,7 @@ class DiscordClient(discord.Client):
         elif message.content.lower().startswith('$roll'):
             commandEntered = True
             try:
-                roll = message.lower().replace('$roll', '').strip()
+                roll = message.content.lower().replace('$roll', '').strip()
                 tokens = self.roller.tokenizer(roll)
                 head = self.roller.buildTree(tokens)
                 results = self.roller.getResults(head)
