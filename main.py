@@ -375,7 +375,7 @@ class DiceWrapper:
             try:
                 num = int(head.left.token)
                 sides = int(head.right.token)
-                return dice.roll('%sd%s'%(num, sides)) # returns a list of results as numbers
+                return list(dice.roll('%sd%s'%(num, sides))) # returns a list of results as ints
             except:
                 raise DiceParserException('Cannot roll dice %sd%s'%(head.left.token, head.right.token))
         # RESULT MODIFIERS:
@@ -440,12 +440,6 @@ class TokenizerException(Exception):
     
 class DiceParserException(Exception):
     pass
-
-
-d = DiceWrapper()
-tokens = d.tokenizer('4d20kh1+5')
-head = d.buildTree(tokens)
-result = d.getResults(head)
 
 client = DiscordClient()
 logger.info('using token: %s'%os.environ['token'])
