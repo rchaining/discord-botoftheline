@@ -81,17 +81,17 @@ class DiscordClient(discord.Client):
                 roll = message.content.lower().replace('$roll', '').strip()
                 tokens = self.roller.tokenizer(roll)
                 head = self.roller.buildTree(tokens)
-                results = self.roller.getResults(head)
+                rollResults = self.roller.getResults(head)
 
-                message.channel.send(roll + ': ' + str(results))
+                await message.channel.send(roll + ': ' + str(rollResults))
                 if isinstance(results, list):
-                    message.channel.send('Total:' + str(sum(results)))
+                    await message.channel.send('Total:' + str(sum(rollResults)))
             except DiceParserException as e:
                 logger.info(e)
-                message.channel.send('Parsing error:' + e.message)
+                await message.channel.send('Parsing error:' + e.message)
             except TokenizerException as e:
                 logger.info(e)
-                message.channel.send('Parsing error:' + e.message)
+                await message.channel.send('Parsing error:' + e.message)
 
         if results:
             if len(results) > 10:
