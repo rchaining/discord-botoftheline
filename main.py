@@ -55,6 +55,9 @@ class DiscordClient(discord.Client):
         elif 'keep' in message.content.lower() and 'party together' in message.content.lower() and self.enablePartyJoke:
             await message.channel.send('https://cdn.discordapp.com/attachments/547608064161873930/619739566332575768/uoqvtjpda3w11.jpg')
             return
+        elif 'say the line' in message.content.lower() and self.enablePartyJoke:
+            await message.channel.send('Am I being threatened, challenged, or accused?')
+            return
         elif message.content.lower().startswith('$spell named'):
             commandEntered = True
             spellName = message.content.lower().strip().replace('$spell named ', '')
@@ -86,6 +89,10 @@ class DiscordClient(discord.Client):
                 await message.channel.send(roll + ': ' + str(rollResults))
                 if isinstance(rollResults, list):
                     await message.channel.send('Total:' + str(sum(rollResults)))
+                    if 69 in rollResults:
+                        await message.channel.send('*nice*')
+                elif rollResults == 69:
+                    await message.channel.send('*nice*')
             except DiceParserException as e:
                 logger.info(e)
                 await message.channel.send('Parsing error:' + e.message)
